@@ -3,7 +3,6 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
-use Rollbar\Laravel\MonologHandler;
 
 return [
 
@@ -31,7 +30,10 @@ return [
     |
     */
 
-    'deprecations' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+    'deprecations' => [
+        'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+        'trace' => false,
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -51,15 +53,8 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['rollbar', 'single'],
+            'channels' => ['single'],
             'ignore_exceptions' => false,
-        ],
-
-        'rollbar' => [
-            'driver' => 'monolog',
-            'handler' => MonologHandler::class,
-            'access_token' => env('ROLLBAR_TOKEN'),
-            'level' => 'debug',
         ],
 
         'single' => [
@@ -86,10 +81,11 @@ return [
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
-            'handler' => SyslogUdpHandler::class,
+            'handler' => env('LOG_PAPERTRAIL_HANDLER', SyslogUdpHandler::class),
             'handler_with' => [
                 'host' => env('PAPERTRAIL_URL'),
                 'port' => env('PAPERTRAIL_PORT'),
+                'connectionString' => 'tls://'.env('PAPERTRAIL_URL').':'.env('PAPERTRAIL_PORT'),
             ],
         ],
 
