@@ -1,35 +1,50 @@
----
-
+# For more information: https://laravel.com/docs/sail
 version: '3'
-
 services:
-
-  db:
-    image: postgres:14.4-bullseye
-    environment:
-      POSTGRES_PASSWORD: password
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  web:
-    build:
-      context: .
-    command: make start
-    ports:
-      - "8000:8000"
-    # env_file: '.env'
-    volumes:
-      # - "web_static:/web/priv/static"
-      - ".:/app"
-      # - "~/.bash_history:/root/.bash_history:cached"
-      # - ".bashrc:/root/.bashrc:cached"
-      - "/tmp:/tmp"
-    depends_on:
-      - db
-
+    laravel.test:
+        build:
+            context: ./vendor/laravel/sail/runtimes/8.1
+            dockerfile: Dockerfile
+            args:
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.1/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        ports:
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+        volumes:
+            - '.:/var/www/html'
+        networks:
+            - sail
+        depends_on:
+            - pgsql
+    pgsql:
+        image: 'postgres:14'
+        ports:
+            - '${FORWARD_DB_PORT:-5432}:5432'
+        environment:
+            PGPASSWORD: '${DB_PASSWORD:-secret}'
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+        volumes:
+            - 'sail-pgsql:/var/lib/postgresql/data'
+            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+        networks:
+            - sail
+        healthcheck:
+            test: ["CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+            retries: 3
+            timeout: 5s
+networks:
+    sail:
+        driver: bridge
 volumes:
-  pgdata:
-  # web_node_modules:
-  # web_static:
-  # app_build:
-  # app_deps:
+    sail-pgsql:
+        driver: local

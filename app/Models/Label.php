@@ -4,21 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Label extends Model
 {
     use HasFactory;
 
-    protected $table = 'labels';
-
     protected $fillable = [
+        'id',
         'name',
-        'description'
+        'description',
+        'created_at',
     ];
 
-    public function tasks(): BelongsToMany
+    public function tasks(): HasMany
     {
-        return $this->belongsToMany(Task::class, 'task_label', 'label_id', 'task_id');
+        return $this->hasMany('App\Models\Task', 'status_id');
     }
 }

@@ -2,20 +2,25 @@
 
 namespace Database\Factories;
 
+use App\Models\Label;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
+/**
+ * @extends Factory<Label>
+ */
 class LabelFactory extends Factory
 {
     /**
      * Define the model's default state.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => $this->faker->name(),
-            'description' => $this->faker->text(150)
+            'name' => fake()->unique()->name(),
+            'description' => fake()->text(),
         ];
     }
 }

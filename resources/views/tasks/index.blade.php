@@ -1,80 +1,93 @@
+@php
+    use App\Helpers\TaskStatusHelper;
+    use App\Helpers\UserHelper;
+@endphp
 @extends('layouts.app')
-
-@section('h1')
-    {{ __('task.title') }}
-@endsection
-
 @section('content')
-    <main class="container py-4">
-    <div class="d-flex mb-3">
-        {{ Form::open(['url' => route('tasks.index'), 'method' => 'get']) }}
-            <div class="row g-1">
-            <div class="col">
 
-                {{ Form::select('filter[status_id]', [ '' => __('task.status')] + $taskStatuses->pluck('name', 'id')
-                    ->all(), $activeFilters['status_id'], ['class' =>"form-select me-2"]) }}
+    <div class="grid col-span-full">
+        <h1 class="max-w-2xl mb-4 text-4xl leading-none tracking-tight md:text-5xl xl:text-6xl dark:text-white">
+            {{ __('layout.task_header') }} </h1>
+        <div class="w-full flex items-center">
+            <div>
+                {{Form::open(['route' => 'tasks.index', 'method' => 'GET'])}}
+                    <div class="flex">
+                        <div>
+                            {{Form::select('filter[status_id]', $taskStatuses, $filter['status_id'] ?? null, ['placeholder' => __('layout.table_task_status'), 'class' => 'form-select ml-2 rounded border-gray-300'])}}                        </div>
+                        <div >
+                            {{Form::select('filter[created_by_id]', $users, $filter['created_by_id'] ?? null, ['placeholder' => __('layout.table_creater'), 'class' => 'form-select ml-2 rounded border-gray-300'])}}                        </div>
+                        <div>
+                            {{Form::select('filter[assigned_to_id]', $users, $filter['assigned_to_id'] ?? null, ['placeholder' => __('layout.table_assigned'), 'class' => 'form-select ml-2 rounded border-gray-300'])}}
+                        </div>
+                        <div>
+                            {{Form::submit(__('layout.create_apply'), ['class' => 'ml-2 rounded bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'])}}
+                        </div>
+
+                    </div>
+                {{Form::close()}}
             </div>
-            <div class="col">
-                {{ Form::select('filter[created_by_id]', ['' => __('task.creator')] + $users->pluck('name', 'id')
-                    ->all(), $activeFilters['created_by_id'], ['class' =>"form-select me-2"]) }}
+            <div class="ml-auto">
             </div>
-            <div class="col">
-                {{ Form::select('filter[assigned_to_id]', ['' => __('task.assigned')] + $users->pluck('name', 'id')
-                    ->all(), $activeFilters['assigned_to_id'], ['class' =>"form-select me-2"]) }}
-            </div>
-            <div class="col">
-                {{ Form::submit(__('task.apply'), ['class' => "btn btn-outline-primary mr-2"]) }}
-            </div>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    @auth()
+                    @csrf
+                    <a href="{{ route('tasks.create') }}"
+                       class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        {{ __('layout.create_button_task') }}           </a>
+                    @endauth
+                </div>
         </div>
-        {{ Form::close() }}
-        @auth
-            <div class="ms-auto">
-                <a href="{{ route('tasks.create')}}" class="btn btn-primary ml-auto"> {{ __('task.create_task') }} </a>
-            </div>
-        @endauth
-    </div>
-    <table class="table me-2">
-        <thead>
+        <table class="mt-4">
+            <thead class="border-b-2 border-solid border-black text-left" style="text-align: left">
             <tr>
-                <th>ID</th>
-                <th>{{ __('task.status') }}</th>
-                <th>{{ __('task.name') }}</th>
-                <th>{{ __('task.creator') }}</th>
-                <th>{{ __('task.assigned') }}</th>
-                <th>{{ __('task.created_at') }}</th>
-                @auth
-                <th>{{ __('task.actions') }}</th>
+                <th>{{ __('layout.table_id') }}</th>
+                <th>{{ __('layout.table_task_status') }}</th>
+                <th>{{ __('layout.table_name') }}</th>
+                <th>{{ __('layout.table_creater') }}</th>
+                <th>{{ __('layout.table_assigned') }}</th>
+                <th>{{ __('layout.table_date_of_creation') }}</th>
+                @auth()
+                    <th>{{ __('layout.table_actions') }}</th>
                 @endauth
             </tr>
-        </thead>
-    <tbody>
-        @foreach ($tasks as $task)
-        <tr>
-            <td>{{ $task->id }}</td>
-            <td>{{ $task->status->name }}</td>
-            <td><a href="{{ route('tasks.show', $task->id)}}">{{ $task->name }}</a></td>
-            <td>{{ $task->createdBy->name }}</td>
-            <td>{{ optional($task->assignedTo)->name }}</td>
-            <td>{{ date('d.m.Y', strtotime($task->created_at)) }}</td>
-            @auth
-            <td>
-                @can('delete', $task)
-
-                    <a class="text-danger" data-method="DELETE" href="{{ route('tasks.destroy', $task) }}" data-confirm="{{ __('messages.alert.confirm') }}"  rel="nofollow">
-                        {{ __('task.delete') }}
-                    </a>
-                @endcan
-                    <a href="{{ route('tasks.edit', $task->id) }}" rel="nofollow">
-                        {{ __('task.change') }}
-                    </a>
-            </td>
-            @endauth
-        </tr>
-        @endforeach
-    </tbody>
-    </table>
-    </main>
-    <nav aria-label="navigation">
-    {{ $tasks->links("pagination::bootstrap-4") }}
-    </nav>
+            </thead>
+            <tbody>
+            @foreach($tasks as $task)
+                <tr class="border-b border-dashed text-left">
+                    <td>{{ $task->id }}</td>
+                    <td>{{ $taskStatuses[$task->status_id] }}</td>
+                    <td><a href="{{ route('tasks.show', $task) }}">{{ $task->name }}</a></td>
+                    <td>{{ $users[$task->created_by_id] }}</td>
+                    <td>{{ $users[$task->assigned_to_id] }}</td>
+                    <td>{{ date_format($task->created_at, 'd.m.Y') }}</td>
+                    @auth()
+                        <td>
+                            @can('delete', $task)
+                            <a
+                                class="text-red-600 hover:text-red-900"
+                                rel="nofollow"
+                                data-method="delete"
+                                data-confirm="{{ __('layout.table_delete_question') }}"
+                                href="{{ route('tasks.destroy', $task) }}"
+                            >
+                                {{ __('layout.table_delete') }}
+                            </a>
+                            @endcan
+                            @can('update', $task)
+                            <a class="text-blue-600 hover:text-blue-900"
+                               href="{{ route("tasks.edit", $task) }}"
+                            >
+                                {{ __('layout.table_edit') }}
+                            </a>
+                                @endcan
+                        </td>
+                    @endauth
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
+    @auth()
+        <div class="mt-4 grid col-span-full">{{ $tasks->links() }}</div>
+    @endauth
 @endsection

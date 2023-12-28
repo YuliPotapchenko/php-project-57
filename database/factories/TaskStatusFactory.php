@@ -5,24 +5,20 @@ namespace Database\Factories;
 use App\Models\TaskStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends Factory<TaskStatus>
+ */
 class TaskStatusFactory extends Factory
 {
     /**
-     * The name of the factory's corresponding model.
-     *
-     * @var string
-     */
-    protected $model = TaskStatus::class;
-
-    /**
      * Define the model's default state.
      *
-     * @return array
+     * @return array<string, mixed>
      */
-    public function definition(): array
+    public function definition()
     {
         return [
-            'name' => $this->faker->word()
+            'name' => fake()->unique()->name(),
         ];
     }
 }

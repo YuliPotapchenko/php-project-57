@@ -13,6 +13,7 @@ setup:
 	php artisan db:seed
 	npm ci
 	npm run build
+	make ide-helper
 
 watch:
 	npm run watch
@@ -30,35 +31,37 @@ test:
 	php artisan test
 
 test-coverage:
-	composer exec --verbose phpunit tests -- --coverage-clover build/logs/clover.xml
+	XDEBUG_MODE=coverage php artisan test --coverage-clover build/logs/clover.xml
 
 deploy:
 	git push heroku
 
 lint:
-	composer phpcs
+	composer exec phpcs -- --standard=PSR12 app routes tests
 
 lint-fix:
-	composer phpcbf
+	composer exec phpcbf -- --standard=PSR12 app routes tests
 
-compose:
-	docker-compose up
+ide-helper:
+	php artisan ide-helper:eloquent
+	php artisan ide-helper:gen
+	php artisan ide-helper:meta
+	php artisan ide-helper:mod -n
 
-compose-test:
-	docker-compose run web make test
+sail-migrate-refresh-seed:
+	./vendor/bin/sail artisan migrate:refresh --seed
 
-compose-bash:
-	docker-compose run web bash
+sail-migrate-drop-database-fresh-seed:
+	./vendor/bin/sail artisan migrate:fresh --seed
 
-compose-setup: compose-build
-	docker-compose run web make setup
+route-list:
+	php artisan route:list
 
-compose-build:
-	docker-compose build
+sail-ide-helper:
+	./vendor/bin/sail artisan ide-helper:eloquent
+	./vendor/bin/sail artisan ide-helper:gen
+	./vendor/bin/sail artisan ide-helper:meta
+	./vendor/bin/sail artisan ide-helper:mod -n
 
-compose-db:
-	docker-compose exec db psql -U postgres
-
-compose-down:
-	docker-compose down -v
-
+docker-setup-start-detached:
+	./vendor/bin/sail up -d

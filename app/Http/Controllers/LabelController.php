@@ -2,98 +2,73 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLabelRequest;
+use App\Http\Requests\UpdateLabelRequest;
 use App\Models\Label;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class LabelController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $labels = Label::paginate(10);
+        $labels = Label::paginate(15);
+
         return view('labels.index', compact('labels'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        $label = new Label();
-        return view('labels.create', compact('label'));
+        if (Auth::guest()) {
+            return abort(403);
+        }
+        return view('labels.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function store(StoreLabelRequest $request)
     {
-        $data = $this->validate($request, [
-            'name' => 'required|unique:labels|max:255',
-            'description' => 'nullable|max:500'
-        ], [
-            'unique' => __('messages.flash.validation.labelUnique'),
-        ]);
+        if (Auth::guest()) {
+             return redirect()->route('labels.index');
+        }
+        $validated = $request->validated();
         $label = new Label();
-        $label->fill($data);
+
+        $label->fill($validated);
         $label->save();
-        flash(__('messages.flash.success.added', ['subject' => __('label.subject')]))->success();
-        return redirect(route('labels.index'));
+
+        flash(__('controllers.label_create'))->success();
+        return redirect()->route('labels.index');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Label  $label
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Label $label)
     {
         return view('labels.edit', compact('label'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Label  $label
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Label $label)
+    public function update(UpdateLabelRequest $request, Label $label)
     {
-        $data = $this->validate($request, [
-            'name' => 'required:labels|max:255',
-            'description' => 'nullable|max:500'
-        ]);
-        $label->fill($data);
-        $label->save();
-        flash(__('messages.flash.success.updated', ['subject' => __('label.subject')]))->success();
-        return redirect(route('labels.index'));
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Label  $label
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Label $label)
-    {
-        if ($label->tasks->isEmpty()) {
-            $label->delete();
-            flash(__('messages.flash.success.deleted', ['subject' => __('label.subject')]))->success();
+        if (Auth::guest()) {
             return redirect()->route('labels.index');
         }
-        flash(__('messages.flash.error.deletedLabel'))->error();
-        return redirect()->back();
+
+        $validated = $request->validated();
+
+        $label->fill($validated);
+        $label->save();
+
+        flash(__('controllers.label_update'))->success();
+        return redirect()->route('labels.index');
+    }
+
+    public function destroy(Label $label)
+    {
+        if ($label->tasks()->exists()) {
+            flash(__('controllers.label_statuses_destroy_failed'))->error();
+            return back();
+        }
+        $label->delete();
+
+        flash(__('controllers.label_destroy'))->success();
+        return redirect()->route('labels.index');
     }
 }

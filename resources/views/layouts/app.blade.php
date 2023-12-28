@@ -1,97 +1,70 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="csrf-param" content="_token">
+    <meta name="csrf-param" content="_token" />
 
-    <title>{{ config('Task manager') }}</title>
+    <title>{{ __('layout.title') }}</title>
 
-    <!-- Scripts -->
-    <script src="/js/app.js" defer></script>
-
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
-    <!-- Styles -->
-    <link href="/css/app.css" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-vh-100 d-flex flex-column">
-<header class="flex-shrink-0">
+<body class="antialiased">
 <div id="app">
-    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ route('index') }}">{{ __('layout.name') }}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <header class="fixed w-full">
+        <nav class="bg-white border-gray-200 py-2.5 dark:bg-gray-900 shadow-md">
+            <div class="flex flex-wrap items-center justify-between max-w-screen-xl px-4 mx-auto">
+                <a href="{{ route('home') }}" class="flex items-center">
+                    <span class="self-center text-xl font-semibold whitespace-nowrap dark:text-white">{{ __('layout.name') }}</span>
+                </a>
+                @guest()
+                    <div class="flex items-center lg:order-2">
+                        <a href="{{ route("login") }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            {{ __('layout.login') }}
+                        </a>
+                        <a href="{{ route("register") }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2">
+                            {{ __('layout.registration') }}
+                        </a>
+                    </div>
+                @endguest
+                @auth()
+                    <div class="flex items-center lg:order-2">
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                        <a href="{{ route("logout") }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            {{ __('layout.logout') }}
+                        </a>
+                    </div>
+                @endauth
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Left Side Of Navbar -->
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ route('tasks.index') }}">{{ __('layout.tasks') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ route('task_statuses.index') }}">{{ __('layout.statuses') }}</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{{ route('labels.index') }}">{{ __('layout.labels') }}</a>
-                    </li>
-                </ul>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="navbar-nav ms-auto">
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('layout.login') }}</a>
-                            </li>
-                        @endif
-
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('layout.register') }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#"
-                               role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}" data-method="post">
-                                    {{ __('layout.logout') }}
-                                </a>
-                            </div>
+                <div class="items-center justify-between hidden w-full lg:flex lg:w-auto lg:order-1">
+                    <ul class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+                        <li>
+                            <a href="{{ route("tasks.index") }}" class="block py-2 pl-3 pr-4 text-gray-700 hover:text-blue-700 lg:p-0">
+                                {{ __('layout.tasks') }}                                </a>
                         </li>
-                    @endguest
-                </ul>
+                        <li>
+                            <a href="{{ route("task_statuses.index") }}" class="block py-2 pl-3 pr-4 text-gray-700 hover:text-blue-700 lg:p-0">
+                                {{ __('layout.task_statuses') }}                                </a>
+                        </li>
+                        <li>
+                            <a href="{{ route("labels.index") }}" class="block py-2 pl-3 pr-4 text-gray-700 hover:text-blue-700 lg:p-0">
+                                {{ __('layout.labels') }}                               </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-
-    <main class="container py-4">
-        @include('flash::message')
-        <h1 class="mb-5">@yield('h1')</h1>
-        @yield('content')
-    </main>
+        </nav>
+    </header>
 </div>
-</header>
-
-<div class="wrapper flex-grow-1"></div>
-<footer class="py-3 mt-5 shadow-lg">
-    <div class="text-center container-lg">
-        {{ date('Y') }} г.
+<section class="bg-white dark:bg-gray-900">
+    <div class="grid max-w-screen-xl px-4 pt-20 pb-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12 lg:pt-28">
+        <div class="mt-4 grid col-span-full">@include('flash::message')</div>
+        @yield('content')
     </div>
-</footer>
+</section>
+@extends('layouts.flash-scripts')
 </body>
 </html>

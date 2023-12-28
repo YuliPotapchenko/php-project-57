@@ -11,33 +11,33 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $table = 'tasks';
-
     protected $fillable = [
+        'id',
         'name',
         'description',
         'status_id',
         'created_by_id',
         'assigned_to_id',
+        'created_at',
     ];
 
-    public function createdBy(): BelongsTo
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by_id');
     }
 
-    public function assignedTo(): BelongsTo
+    public function executor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to_id');
     }
 
     public function status(): BelongsTo
     {
-        return $this->belongsTo(TaskStatus::class, 'status_id');
+        return $this->belongsTo(TaskStatus::class);
     }
 
     public function labels(): BelongsToMany
     {
-        return $this->belongsToMany(Label::class, 'task_label', 'task_id', 'label_id');
+        return $this->belongsToMany(Label::class);
     }
 }
