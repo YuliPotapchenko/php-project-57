@@ -31,7 +31,10 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Label whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Label whereUpdatedAt($value)
  */
-	class Label extends \Eloquent {}
+    class Label extends \Eloquent
+    {
+
+    }
 }
 
 namespace App\Models{
