@@ -33,7 +33,6 @@ namespace App\Models{
  */
     class Label extends \Eloquent
     {
-
     }
 }
 
@@ -67,7 +66,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereStatusId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Task whereUpdatedAt($value)
  */
-	class Task extends \Eloquent {}
+    class Task extends \Eloquent
+    {
+    }
 }
 
 namespace App\Models{
@@ -89,7 +90,9 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|TaskStatus whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|TaskStatus whereUpdatedAt($value)
  */
-	class TaskStatus extends \Eloquent {}
+    class TaskStatus extends \Eloquent
+    {
+    }
 }
 
 namespace App\Models{
@@ -125,6 +128,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  */
-	class User extends \Eloquent {}
+    class User extends \Eloquent
+    {
+    }
 }
-
