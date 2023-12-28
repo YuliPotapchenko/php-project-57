@@ -17,7 +17,6 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="/">Менеджер задач</a>
                         <a class="nav-link" href="{{ route('tasks.index') }}">
                         Задачи</a>
                         <a class="nav-link" href="{{ route('task_statuses.index') }}">
@@ -25,6 +24,34 @@
                         <a class="nav-link" href="{{ route('labels.index') }}">
                             Метки</a>
                     </div>
+                    <ul class="navbar-nav ms-auto">
+                        <!-- Authentication Links -->
+                        @guest
+                            @if (Route::has('login'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('layout.login') }}</a>
+                                </li>
+                            @endif
+
+                            @if (Route::has('register'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('layout.register') }}</a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#"
+                                   role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ Auth::user()->name }}
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}" data-method="post">
+                                        {{ __('layout.logout') }}
+                                    </a>
+                                </div>
+                            </li>
+                        @endguest
+                    </ul>
                 </div>
             </div>
         </nav>
