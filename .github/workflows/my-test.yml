@@ -1,0 +1,34 @@
+name: my-test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  laravel-tests:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+      with:
+        php-version: '8.0'
+    - uses: actions/checkout@v2
+
+    - name: Setup project
+      run: make setup
+
+    - name: Check lint
+      run: make lint
+
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v2.6.0
+      env:
+        XDEBUG_MODE: coverage
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+      with:
+        coverageCommand: make test-coverage
+        coverageLocations: ${{github.workplace}}/build/logs/clover.xml:clover
+        debug: true
