@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    ArticleController,
-    PageController,
+    TaskStatusController,
+    TaskController,
+    LabelController
 };
 
 /*
@@ -22,6 +23,7 @@ Route::get('/', function () {
 })->name('index');
 
 Route::resources([
-    'pages' => PageController::class,
-    'articles' => ArticleController::class,
+    'task_statuses' => TaskStatusController::class,
+    'tasks' => TaskController::class,
+    'labels' => LabelController::class,
 ]);
