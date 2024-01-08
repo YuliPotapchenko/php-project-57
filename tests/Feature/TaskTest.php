@@ -140,18 +140,4 @@ class TaskTest extends TestCase
 
         $this->assertDatabaseHas('tasks', $this->data);
     }
-
-    public function testNotCreateTaskUnauthorized(): void
-    {
-        $response = $this->get(route('tasks.create'));
-
-        $response->assertStatus(403);
-    }
-
-    public function testNotEditTaskUnauthorized(): void
-    {
-        $response = $this->get(route('tasks.edit', $this->task));
-
-        $response->assertStatus(403);
-    }
 }

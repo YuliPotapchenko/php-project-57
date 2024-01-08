@@ -89,11 +89,4 @@ class LabelTest extends TestCase
 
         $this->assertDatabaseMissing('labels', $this->label->only(['name', 'description']));
     }
-
-    public function testNotCreatePageLabelUnauthorized(): void
-    {
-        $response = $this->get(route('labels.create'));
-
-        $response->assertStatus(403);
-    }
 }

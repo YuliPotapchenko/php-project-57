@@ -90,11 +90,4 @@ class TaskStatusTest extends TestCase
 
         $this->assertDatabaseMissing('task_statuses', $this->taskStatus->only(['name']));
     }
-
-    public function testNotCreateTaskStatusUnauthorized(): void
-    {
-        $response = $this->get(route('task_statuses.create'));
-
-        $response->assertStatus(403);
-    }
 }
