@@ -25,7 +25,6 @@ class TaskStatusTest extends TestCase
     public function testTaskStatusesPage(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->get(route('task_statuses.index'));
 
         $response->assertOk();
@@ -34,7 +33,6 @@ class TaskStatusTest extends TestCase
     public function testStoreTaskStatus(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->post(route('task_statuses.store', $this->data));
 
         $response->assertRedirect(route('task_statuses.index'));
@@ -54,7 +52,6 @@ class TaskStatusTest extends TestCase
     public function testEditPage(): void
     {
         $response = $this->actingAs($this->user)
-                        ->withSession(['banned' => false])
                         ->get(route('task_statuses.edit', $this->taskStatus));
 
         $response->assertOk();
@@ -63,7 +60,6 @@ class TaskStatusTest extends TestCase
     public function testUpdateTaskStatus(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->put(route('task_statuses.update', $this->taskStatus), $this->data);
 
         $response->assertRedirect(route('task_statuses.index'));
@@ -83,7 +79,6 @@ class TaskStatusTest extends TestCase
     public function testDeleteTaskStatus(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->delete(route('task_statuses.destroy', $this->taskStatus));
 
         $response->assertRedirect(route('task_statuses.index'));

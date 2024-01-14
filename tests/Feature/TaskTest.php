@@ -33,7 +33,6 @@ class TaskTest extends TestCase
     public function testTasksPage(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->get(route('tasks.index'));
 
         $response->assertOk();
@@ -48,7 +47,6 @@ class TaskTest extends TestCase
             'assigned_to_id',
         ]);
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->post(route('tasks.store', $data));
 
         $response->assertRedirect(route('tasks.index'));
@@ -74,7 +72,6 @@ class TaskTest extends TestCase
     public function testEditPage(): void
     {
         $response = $this->actingAs($this->user)
-                        ->withSession(['banned' => false])
                         ->get(route('tasks.edit', $this->task));
 
         $response->assertOk();
@@ -89,7 +86,6 @@ class TaskTest extends TestCase
             'assigned_to_id',
         ]);
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->put(route('tasks.update', $this->task), $data);
 
         $response->assertRedirect(route('tasks.index'));
@@ -116,7 +112,6 @@ class TaskTest extends TestCase
     public function testDeleteTask(): void
     {
         $response = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->delete(route('tasks.destroy', $this->task));
 
         $response->assertRedirect(route('tasks.index'));
@@ -127,12 +122,10 @@ class TaskTest extends TestCase
     public function testNotDeleteTaskWithoutCreater(): void
     {
         $responseUser = $this->actingAs($this->user)
-            ->withSession(['banned' => false])
             ->post(route('tasks.store', $this->data));
 
         $user2 = User::factory()->create();
         $responseUser2 = $this->actingAs($user2)
-            ->withSession(['banned' => false])
             ->delete(route('tasks.destroy', $this->task));
 
 
