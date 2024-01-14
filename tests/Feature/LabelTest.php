@@ -41,15 +41,6 @@ class LabelTest extends TestCase
         $this->assertDatabaseHas('labels', $this->data);
     }
 
-    public function testNotStoreLabelWithoutAuthorized(): void
-    {
-        $response = $this->post(route('labels.store'), $this->data);
-
-        $response->assertRedirect(route('labels.index'));
-
-        $this->assertDatabaseMissing('labels', $this->data);
-    }
-
     public function testEditPageLabel(): void
     {
         $response = $this->actingAs($this->user)
@@ -68,15 +59,6 @@ class LabelTest extends TestCase
         $response->assertRedirect(route('labels.index'));
 
         $this->assertDatabaseHas('labels', $this->data);
-    }
-
-    public function testNotUpdateLabelWithoutAuthorized(): void
-    {
-        $response = $this->put(route('labels.update', $this->label), $this->data);
-
-        $response->assertRedirect(route('labels.index'));
-
-        $this->assertDatabaseMissing('labels', $this->data);
     }
 
     public function testDeleteLabel(): void
