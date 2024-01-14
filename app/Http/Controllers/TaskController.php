@@ -64,12 +64,10 @@ class TaskController extends Controller
         $createdById = Auth::id();
         $data = [...$validated, 'created_by_id' => $createdById];
 
-        $task = new Task();
-        $task->fill($data);
-        $task->save();
+        $task = Task::create($data);
 
         if (array_key_exists('labels', $validated)) {
-            $task->labels()->attach($validated['labels']);
+            $task->labels()->sync($validated['labels']);
         }
 
         $message = __('controllers.tasks_create');

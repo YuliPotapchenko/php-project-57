@@ -34,7 +34,7 @@ class LabelTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->withSession(['banned' => false])
-            ->post(route('labels.store', $this->data));
+            ->post(route('labels.store'), $this->data);
 
         $response->assertRedirect(route('labels.index'));
 
@@ -43,7 +43,7 @@ class LabelTest extends TestCase
 
     public function testNotStoreLabelWithoutAuthorized(): void
     {
-        $response = $this->post(route('labels.store', $this->data));
+        $response = $this->post(route('labels.store'), $this->data);
 
         $response->assertRedirect(route('labels.index'));
 
@@ -53,8 +53,8 @@ class LabelTest extends TestCase
     public function testEditPageLabel(): void
     {
         $response = $this->actingAs($this->user)
-                        ->withSession(['banned' => false])
-                        ->get(route('labels.edit', $this->label));
+            ->withSession(['banned' => false])
+            ->get(route('labels.edit', $this->label));
 
         $response->assertOk();
     }

@@ -41,7 +41,7 @@ class LabelPolicy
      */
     public function create(User $user)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**
@@ -53,7 +53,7 @@ class LabelPolicy
      */
     public function update(User $user, Label $label)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**
@@ -65,7 +65,7 @@ class LabelPolicy
      */
     public function delete(User $user, Label $label)
     {
-        return true;
+        return $label->tasks()->doesntExist();
     }
 
     /**
