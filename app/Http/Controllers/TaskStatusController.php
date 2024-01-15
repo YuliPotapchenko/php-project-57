@@ -26,7 +26,7 @@ class TaskStatusController extends Controller
 
     public function store(StoreTaskStatusRequest $request)
     {
-        $this->authorize('store', TaskStatus::class);
+        $this->authorize('create', TaskStatus::class);
 
         $validated = $request->validated();
         $taskStatus = new TaskStatus();
