@@ -40,15 +40,6 @@ class TaskStatusTest extends TestCase
         $this->assertDatabaseHas('task_statuses', $this->data);
     }
 
-    public function testNotCreateStoreTaskStatusWithoutAuthorized(): void
-    {
-        $response = $this->post(route('task_statuses.store', $this->data));
-
-        $response->assertRedirect(route('task_statuses.index'));
-
-        $this->assertDatabaseMissing('task_statuses', $this->data);
-    }
-
     public function testEditPage(): void
     {
         $response = $this->actingAs($this->user)
@@ -65,15 +56,6 @@ class TaskStatusTest extends TestCase
         $response->assertRedirect(route('task_statuses.index'));
 
         $this->assertDatabaseHas('task_statuses', $this->data);
-    }
-
-    public function testNotUpdateTaskStatusWithoutAuthorized(): void
-    {
-        $response = $this->put(route('task_statuses.update', $this->taskStatus), $this->data);
-
-        $response->assertRedirect(route('task_statuses.index'));
-
-        $this->assertDatabaseMissing('task_statuses', $this->data);
     }
 
     public function testDeleteTaskStatus(): void

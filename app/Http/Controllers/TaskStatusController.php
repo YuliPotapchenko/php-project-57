@@ -12,6 +12,7 @@ class TaskStatusController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', TaskStatus::class);
         $taskStatuses = TaskStatus::paginate(15);
 
         return view('taskStatuses.index', compact('taskStatuses'));
@@ -19,17 +20,13 @@ class TaskStatusController extends Controller
 
     public function create()
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', TaskStatus::class);
         return view('taskStatuses.create');
     }
 
     public function store(StoreTaskStatusRequest $request)
     {
-        if (Auth::guest()) {
-            return redirect()->route('task_statuses.index');
-        }
+        $this->authorize('store', TaskStatus::class);
 
         $validated = $request->validated();
         $taskStatus = new TaskStatus();
@@ -48,9 +45,7 @@ class TaskStatusController extends Controller
 
     public function update(UpdateTaskStatusRequest $request, TaskStatus $taskStatus)
     {
-        if (Auth::guest()) {
-            return redirect()->route('task_statuses.index');
-        }
+        $this->authorize('update', $taskStatus);
 
         $validated = $request->validated();
 
@@ -63,6 +58,7 @@ class TaskStatusController extends Controller
 
     public function destroy(TaskStatus $taskStatus)
     {
+        $this->authorize('delete', $taskStatus);
         if ($taskStatus->tasks()->exists()) {
             flash(__('controllers.task_statuses_destroy_failed'))->error();
             return back();

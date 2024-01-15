@@ -41,7 +41,7 @@ class TaskPolicy
      */
     public function create(User $user)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**
@@ -53,7 +53,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**

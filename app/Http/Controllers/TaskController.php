@@ -18,6 +18,7 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Task::class);
         $taskStatuses = TaskStatus::pluck('name', 'id')->all();
         $users = User::pluck('name', 'id')->all();
 
@@ -39,14 +40,13 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
+        $this->authorize('viewAny', Task::class);
         return view('tasks.show', compact('task'));
     }
 
     public function create()
     {
-        if (Auth::guest()) {
-            return abort(403);
-        }
+        $this->authorize('create', Task::class);
 
         $statuses = TaskStatus::pluck('name', 'id');
         $users = User::pluck('name', 'id');
@@ -56,9 +56,7 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request)
     {
-        if (Auth::guest()) {
-            return redirect()->route('tasks.index');
-        }
+        $this->authorize('create', Task::class);
 
         $validated = $request->validated();
         $createdById = Auth::id();
@@ -77,9 +75,8 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        if (Auth::guest()) {
-            abort(403);
-        }
+        $this->authorize('update', $task);
+
         $statuses = TaskStatus::pluck('name', 'id');
         $users = User::pluck('name', 'id');
         $labels = Label::pluck('name', 'id');
@@ -88,16 +85,13 @@ class TaskController extends Controller
 
     public function update(UpdateTaskRequest $request, Task $task)
     {
-        if (Auth::guest()) {
-            return redirect()->route('tasks.index');
-        }
+        $this->authorize('update', $task);
 
         $validated = $request->validated();
         $createdById = $task->created_by_id;
         $data = [...$validated, 'created_by_id' => $createdById];
 
         $task->fill($data);
-
 
         if (array_key_exists('labels', $validated)) {
             $task->labels()->sync($validated['labels']);
@@ -111,13 +105,11 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        if (Auth::id() === $task->created_by_id) {
-            $task->labels()->detach();
-            $task->delete();
-            flash(__('controllers.tasks_destroy'))->success();
-        } else {
-            flash(__('tasks_destroy_failed'))->error();
-        }
+        $this->authorize('delete', $task);
+
+        $task->labels()->detach();
+        $task->delete();
+        flash(__('controllers.tasks_destroy'))->success();
         return redirect()->route('tasks.index');
     }
 }

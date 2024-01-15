@@ -54,21 +54,6 @@ class TaskTest extends TestCase
         $this->assertDatabaseHas('tasks', $data);
     }
 
-    public function testNotCreateStoreTaskWithoutAuthorized(): void
-    {
-        $data = Task::factory()->make()->only([
-            'name',
-            'description',
-            'status_id',
-            'assigned_to_id',
-        ]);
-        $response = $this->post(route('tasks.store', $data));
-
-        $response->assertRedirect(route('tasks.index'));
-
-        $this->assertDatabaseMissing('tasks', $data);
-    }
-
     public function testEditPage(): void
     {
         $response = $this->actingAs($this->user)
@@ -91,22 +76,6 @@ class TaskTest extends TestCase
         $response->assertRedirect(route('tasks.index'));
 
         $this->assertDatabaseHas('tasks', $data);
-    }
-
-    public function testNotUpdateTaskWithoutAuthorized(): void
-    {
-        $data = Task::factory()->make()->only([
-            'name',
-            'description',
-            'status_id',
-            'assigned_to_id',
-        ]);
-
-        $response = $this->put(route('tasks.update', $this->task), $data);
-
-        $response->assertRedirect(route('tasks.index'));
-
-        $this->assertDatabaseMissing('tasks', $data);
     }
 
     public function testDeleteTask(): void

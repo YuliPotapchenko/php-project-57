@@ -41,7 +41,7 @@ class TaskStatusPolicy
      */
     public function create(User $user)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**
@@ -53,7 +53,7 @@ class TaskStatusPolicy
      */
     public function update(User $user, TaskStatus $taskStatus)
     {
-        return true;
+        return !Auth::guest();
     }
 
     /**
@@ -65,7 +65,7 @@ class TaskStatusPolicy
      */
     public function delete(User $user, TaskStatus $taskStatus)
     {
-        return true;
+        return $taskStatus->tasks()->doesntExist();
     }
 
     /**
