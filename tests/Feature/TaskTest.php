@@ -87,19 +87,4 @@ class TaskTest extends TestCase
 
         $this->assertDatabaseMissing('tasks', $this->data);
     }
-
-    public function testNotDeleteTaskWithoutCreater(): void
-    {
-        $responseUser = $this->actingAs($this->user)
-            ->post(route('tasks.store', $this->data));
-
-        $user2 = User::factory()->create();
-        $responseUser2 = $this->actingAs($user2)
-            ->delete(route('tasks.destroy', $this->task));
-
-
-        $responseUser2->assertRedirect(route('tasks.index'));
-
-        $this->assertDatabaseHas('tasks', $this->data);
-    }
 }

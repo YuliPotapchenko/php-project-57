@@ -107,13 +107,9 @@ class TaskController extends Controller
     {
         $this->authorize('delete', $task);
 
-        if (Auth::id() === $task->created_by_id) {
-            $task->labels()->detach();
-            $task->delete();
-            flash(__('controllers.tasks_destroy'))->success();
-        } else {
-            flash(__('tasks_destroy_failed'))->error();
-        }
+        $task->labels()->detach();
+        $task->delete();
+        flash(__('controllers.tasks_destroy'))->success();
         return redirect()->route('tasks.index');
     }
 }
